@@ -32,19 +32,19 @@ def createShip(shipname=None, shipaccel=None):
         name = shipname
 
     if shipaccel:
-        accel = shipaccel
+        accel = shipaccel*g
     else:
         accel = input("Enter an acceleration as a multiple of g; "
-                    "hit 'Enter' for 1g: ")
+                "hit 'Enter' for 1g: ")
         if not accel:
-            accel = 1.0
+            accel = 1.0*g
 
     try:
         accel = float(accel)
     except ValueError:
         print("Invalid value " + str(accel) +
-                " for accel; setting accel to 1.0")
-        accel = 1.0
+            " for accel; setting accel to 1.0")
+        accel = 1.0*g
 
     return Ship(name, accel)
 
@@ -76,24 +76,24 @@ def planMission(brachistrone, distance, myShip, myTerra):
     """
     def brachistrone(bdist):
         """In a brachistrone mission, the ship flips end-for-end halfway through
-        to decellerate; therefore the proper time (time experienced aboard ship)
-        is calculated to the midway point (distance/2) and then doubled for the
-        second half of the mission
+        to decellerate; therefore the proper time (time experienced aboard
+        ship) is calculated to the midway point (distance/2) and then doubled
+        for the second half of the mission
         """
         myShip.proper_time_from_d(bdist)
         myShip.setvar("ptime", 2*myShip.ptime)
-        myShip.velocity()
+        myShip.velocity_self()
         myTerra.ttime_from_proper_time(myShip.accel, myShip.ptime)
-        myShip.gamma()
+        myShip.gamma_self()
 
     def nobrachistrone(dist):
         """In a non-brachistrone mission, the ship accelerates the whole way
         through, without making any provision for stopping
         """
         myShip.proper_time_from_d(dist)
-        myShip.velocity()
+        myShip.velocity_self()
         myTerra.ttime_from_proper_time(myShip.accel, myShip.ptime)
-        myShip.gamma()
+        myShip.gamma_self()
 
     if brachistrone:
         brachistrone(distance/2)
@@ -107,10 +107,10 @@ def resetMission(myShip, myTerra):
     """
     for var in vars(myShip):
         if var != 'name' and var != 'accel':
-            myShip.delvar(var)
+            myShip.setvar(str(var), None)
     for var in vars(myTerra):
         if var != 'name':
-            myTerra.delVar(var)
+            myTerra.setvar(str(var), None)
 
 
 def testMission():
@@ -135,25 +135,25 @@ def testMission():
     try:
         assert enterprise.ptime == ptime_expected
     except AssertionError:
-        print("enterprise.ptime: %d" % enterprise.ptime)
-        print("expected ptime: %d" % ptime_expected)
+        print("enterprise.ptime: %f" % enterprise.ptime)
+        print("expected ptime: %f" % ptime_expected)
         isGreen = False
     try:
         assert enterprise.velocity == velocity_expected
     except AssertionError:
-        print("enterprise.velocity: %d" % enterprise.velocity)
-        print("expected velocity: %d" % velocity_expected)
+        print("enterprise.velocity: %f" % enterprise.velocity)
+        print("expected velocity: %f" % velocity_expected)
         isGreen = False
     try:
         assert enterprise.gamma == gamma_expected
     except AssertionError:
-        print("enterprise.gamma: %d" % enterprise.gamma)
-        print("expected gamma: %d" % gamma_expected)
+        print("enterprise.gamma: %f" % enterprise.gamma)
+        print("expected gamma: %f" % gamma_expected)
         isGreen = False
     try:
         assert earth.ttime == ttime_expected
     except AssertionError:
-        print("earth.ttime: %d" % earth.ttime)
-        print("expected ttime: %d" % ttime_expected)
+        print("earth.ttime: %f" % earth.ttime)
+        print("expected ttime: %f" % ttime_expected)
         isGreen = False
     return isGreen, enterprise, earth

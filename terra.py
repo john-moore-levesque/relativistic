@@ -1,5 +1,6 @@
 from math import pow, sinh, sqrt
-from simulator import c
+# c = speed of light = 1 (because everything is calculated as a percent of c)
+c = 1
 
 
 class Terra:
@@ -26,7 +27,8 @@ class Terra:
         """Calculate the distance travelled, using the ship's acceleration and
         Terra Time (the time experienced by a stationary observer)
         """
-        self.distance = pow(c, 2)/(a) * (sqrt(1 + pow(((a)*self.ttime)/c, 2)) - 1)
+        self.distance = pow(c, 2)/(a) * (sqrt(1 +
+                                            pow(((a)*self.ttime)/c, 2)) - 1)
 
     def gamma(self, a):
         """Calculate gamma (a.k.a., the Lorentz factor) - the factor by which
@@ -44,21 +46,3 @@ class Terra:
         Bar
         """
         setattr(self, str(var), val)
-
-    def delvar(self, var):
-        """Delete variable
-        >>> myTerra.name
-        Foo
-        >>> myTerra.delvar("name")
-        >>> myTerra.name
-        Traceback (most recent call last):
-        File "<stdin>", line 1, in <module>
-        AttributeError: 'Terra' object has no attribute 'name'
-        >>> myOtherTerra.delvar("something-that-doesn't-exist")
-        My Other Terra does not have an attribute called
-            something-that-doesn't-exist
-        """
-        try:
-            delattr(self, str(var))
-        except AttributeError:
-            print("%s does not have an attribute called %s" % (self.name, str(var)))

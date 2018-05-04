@@ -1,15 +1,17 @@
 from math import asinh, acosh, cosh, pow, sqrt, tanh
-from simulator import c, g
+
+# c = speed of light = 1 (because everything is calculated as a percent of c)
+c = 1
 
 
 class Ship:
 
     def __init__(self, name, a):
-        """Create new ship object with name 'name' and accel 'a*g' (where g is
-        1 standard gravity
+        """Create new ship object with name 'name' and accel 'a' (where 'a' is
+        some number multiplied by 'g')
         """
         self.name = name
-        self.accel = a*g
+        self.accel = a
 
     def proper_time_from_terra(self, tt):
         """Calculate proper time (i.e., time experienced aboard ship) using
@@ -23,7 +25,7 @@ class Ship:
         """
         self.ptime = (c/(self.accel)) * acosh(((self.accel)*d)/pow(c, 2) + 1)
 
-    def gamma(self):
+    def gamma_self(self):
         """Calculate gamma (a.k.a., the Lorentz factor) - the factor by which
         time, length, and relativistic mass change for the ship
         """
@@ -43,7 +45,7 @@ class Ship:
         """
         self.gamma = sqrt(1 + pow(((self.accel)*tt)/c, 2))
 
-    def velocity(self):
+    def velocity_self(self):
         """Calculate velocity as a percent of the speed of light
         """
         self.velocity = c * tanh(((self.accel)*self.ptime)/c)
@@ -57,21 +59,3 @@ class Ship:
         21
         """
         setattr(self, str(var), val)
-
-    def delvar(self, var):
-        """Delete variable
-        >>> myShip.accel
-        1
-        >>> myShip.delvar("accel")
-        >>> myShip.accel
-        Traceback (most recent call last):
-        File "<stdin>", line 1, in <module>
-        AttributeError: 'Ship' object has no attribute 'accel'
-        >>> myShip.delvar("something-that-doesn't-exist")
-        My Ship does not have an attribute called something-that-doesn't-exist
-        """
-        try:
-            delattr(self, str(var))
-        except AttributeError:
-            print("%s does not have an attribute called %s" % (self.name,
-                    str(var)))
