@@ -1,5 +1,5 @@
 from ship import Ship
-from terra import Terra
+from planet import Planet
 
 # g = 1 gravity = 1.03 light years/year^2
 # c = speed of light = 1 (because everything is calculated as a percent of c)
@@ -49,50 +49,50 @@ def createShip(shipname=None, shipaccel=None):
     return Ship(name, accel)
 
 
-def createTerra(terraname=None):
-    """Creates new Terra object
-    >>> myTerra = createTerra()
-    Enter a planet name: My Terra
-    >>> myTerra
-    < terra.Terra object at ... >
-    >>> myTerra.name
-    My Terra
-    >>> myOtherTerra = createTerra("My Other Terra")
-    >>> myOtherTerra
-    < terra.Terra object at ... >
-    >>> myOtherTerra.name
-    My Other Terra
+def createPlanet(planetname=None):
+    """Creates new planet object
+    >>> myplanet = createplanet()
+    Enter a planet name: My planet
+    >>> myplanet
+    < planet.planet object at ... >
+    >>> myplanet.name
+    My planet
+    >>> myOtherplanet = createplanet("My Other planet")
+    >>> myOtherplanet
+    < planet.planet object at ... >
+    >>> myOtherplanet.name
+    My Other planet
     """
-    if terraname:
-        name = terraname
+    if planetname:
+        name = planetname
     else:
         name = input("Enter a planet name: ")
-    return Terra(name)
+    return Planet(name)
 
 
-def planMission(brachistrone, distance, myShip, myTerra):
+def planMission(brachistrone, distance, myShip, myplanet):
     """Plan a mission using given parameters; see below for clarification on the
     brachistrone parameters
     """
     def brachistrone(bdist):
         """In a brachistrone mission, the ship flips end-for-end halfway through
-        to decellerate; therefore the proper time (time experienced aboard
+        to decellerate; therefore the ship time (time experienced aboard
         ship) is calculated to the midway point (distance/2) and then doubled
         for the second half of the mission
         """
-        myShip.proper_time_from_d(bdist)
-        myShip.setvar("ptime", 2*myShip.ptime)
+        myShip.ship_time_from_d(bdist)
+        myShip.setvar("stime", 2*myShip.stime)
         myShip.velocity_self()
-        myTerra.ttime_from_proper_time(myShip.accel, myShip.ptime)
+        myplanet.ptime_from_ship_time(myShip.accel, myShip.stime)
         myShip.gamma_self()
 
     def nobrachistrone(dist):
         """In a non-brachistrone mission, the ship accelerates the whole way
         through, without making any provision for stopping
         """
-        myShip.proper_time_from_d(dist)
+        myShip.ship_time_from_d(dist)
         myShip.velocity_self()
-        myTerra.ttime_from_proper_time(myShip.accel, myShip.ptime)
+        myplanet.ptime_from_ship_time(myShip.accel, myShip.stime)
         myShip.gamma_self()
 
     if brachistrone:
@@ -101,42 +101,42 @@ def planMission(brachistrone, distance, myShip, myTerra):
         nobrachistrone(distance)
 
 
-def resetMission(myShip, myTerra):
-    """Deletes all ship variables except for name and accel; deletes all Terra
+def resetMission(myShip, myplanet):
+    """Deletes all ship variables except for name and accel; deletes all planet
     variables except for name
     """
     for var in vars(myShip):
         if var != 'name' and var != 'accel':
             myShip.setvar(str(var), None)
-    for var in vars(myTerra):
+    for var in vars(myplanet):
         if var != 'name':
-            myTerra.setvar(str(var), None)
+            myplanet.setvar(str(var), None)
 
 
 def testMission():
     """Does a test mission to Vega (27 light years away) at 1g acceleration
     This is a brachistrone mission (i.e., the ship flips over halfway through
     to start decelleration).
-    If ptime, velocity, gamma, and ttime all match the expected values, then
+    If stime, velocity, gamma, and ptime all match the expected values, then
     isGreen is left at True and everything is good
     If one (or more) deviates, then isGreen is set to False and an error
     message is printed
-    In either case, isGreen, the ship, and the terra are returned
+    In either case, isGreen, the ship, and the planet are returned
     """
     enterprise = createShip("Enterprise", 1)
-    earth = createTerra("Earth")
+    earth = createPlanet("Earth")
     vega = 27
-    ptime_expected = 6.589741132778765
+    stime_expected = 6.589741132778765
     velocity_expected = 0.9999974558674861
     gamma_expected = 443.31805000000037
-    ttime_expected = 430.4047787768305
+    ptime_expected = 430.4047787768305
     isGreen = True
     planMission(True, vega, enterprise, earth)
     try:
-        assert enterprise.ptime == ptime_expected
+        assert enterprise.stime == stime_expected
     except AssertionError:
-        print("enterprise.ptime: %f" % enterprise.ptime)
-        print("expected ptime: %f" % ptime_expected)
+        print("enterprise.stime: %f" % enterprise.stime)
+        print("expected stime: %f" % stime_expected)
         isGreen = False
     try:
         assert enterprise.velocity == velocity_expected
@@ -151,9 +151,9 @@ def testMission():
         print("expected gamma: %f" % gamma_expected)
         isGreen = False
     try:
-        assert earth.ttime == ttime_expected
+        assert earth.ptime == ptime_expected
     except AssertionError:
-        print("earth.ttime: %f" % earth.ttime)
-        print("expected ttime: %f" % ttime_expected)
+        print("earth.ptime: %f" % earth.ptime)
+        print("expected ptime: %f" % ptime_expected)
         isGreen = False
     return isGreen, enterprise, earth

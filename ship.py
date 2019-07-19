@@ -1,8 +1,5 @@
 from math import asinh, acosh, cosh, pow, sqrt, tanh
 
-# c = speed of light = 1 (because everything is calculated as a percent of c)
-c = 1
-
 
 class Ship:
 
@@ -13,42 +10,42 @@ class Ship:
         self.name = name
         self.accel = a
 
-    def proper_time_from_terra(self, tt):
-        """Calculate proper time (i.e., time experienced aboard ship) using
+    def ship_time_from_terra(self, tt):
+        """Calculate Ship Time (i.e., time experienced aboard ship) using
         the time experienced from a stationary observer (Terra Time)
         """
-        self.ptime = (c/(self.accel)) * asinh(((self.accel)*tt)/c)
+        self.stime = (1/(self.accel)) * asinh(((self.accel)*tt))
 
-    def proper_time_from_d(self, d):
-        """Calculate proper time (i.e., time experienced aboard ship) using
+    def ship_time_from_d(self, d):
+        """Calculate Ship Time (i.e., time experienced aboard ship) using
         the distance travelled
         """
-        self.ptime = (c/(self.accel)) * acosh(((self.accel)*d)/pow(c, 2) + 1)
+        self.stime = (1/(self.accel)) * acosh(((self.accel)*d)/pow(1, 2) + 1)
 
     def gamma_self(self):
         """Calculate gamma (a.k.a., the Lorentz factor) - the factor by which
         time, length, and relativistic mass change for the ship
         """
-        self.gamma = cosh(((self.accel)*self.ptime)/c)
+        self.gamma = cosh(((self.accel)*self.stime))
 
     def gamma_d(self, d):
         """Calculate gamma (a.k.a., the Lorentz factor) - the factor by which
         time, length, and relativistic mass change for the ship, using the
         distance travelled
         """
-        self.gamma = ((self.accel)*d)/pow(c, 2) + 1
+        self.gamma = ((self.accel)*d)/pow(1, 2) + 1
 
     def gamma_tt(self, tt):
         """Calculate gamma (a.k.a., the Lorentz factor) - the factor by which
         time, length, and relativistic mass change for the ship, using
         Terra Time
         """
-        self.gamma = sqrt(1 + pow(((self.accel)*tt)/c, 2))
+        self.gamma = sqrt(1 + pow(((self.accel)*tt), 2))
 
     def velocity_self(self):
         """Calculate velocity as a percent of the speed of light
         """
-        self.velocity = c * tanh(((self.accel)*self.ptime)/c)
+        self.velocity = tanh(((self.accel)*self.stime))
 
     def setvar(self, var, val):
         """Set variable
