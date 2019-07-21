@@ -22,10 +22,12 @@ def mission():
     mission = None
     if request.method == 'POST':
         shipname = request.form['shipname']
-        acceleration = request.form['acceleration']
+        acceleration = float(request.form['acceleration'])
         planetname = request.form['planetname']
         brachistrone = request.form['brachistrone']
-        distance = request.form['distance']
+        distance = float(request.form['distance'])
+        if not brachistrone:
+            brachistrone = False
 
         if form.validate():
             ship = createShip(shipname, acceleration)
